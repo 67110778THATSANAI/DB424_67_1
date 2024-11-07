@@ -1,7 +1,7 @@
 <?php
 require 'db.php';
 
-if (isset($_POST['signup'])) {
+//if (isset($_POST['signup'])) {
     $username = $_POST['username'];
     $password = password_hash(
         $_POST['password'],
@@ -12,7 +12,7 @@ try {
 $sql = "SELECT studentID
         FROM student
         WHERE studentID=?";
-$stmt = $conn->prepare($sql);
+$stmt = $conn->prepare($sql); #stmt ทำเพราะไม่ไว้ใจข้อมูลที่ user ส่งมา
 $stmt->bind_param('s', $username);
 $stmt->execute();
 $result = $stmt->get_result();
@@ -22,14 +22,20 @@ $sql = "INSERT INTO users (username, password)
     $stmt = $conn->prepare($sql);
     $stmt->bind_param('ss', $username, $password);
     $stmt->execute();
-    echo 'Success';
+    http_response_code(201);
+    echo json_encode(['message'=>'Success']);
+  //  echo 'Success';
 }
 else {
-    echo 'Student ID not found.';
+  http_response_code(400);
+  echo json_encode(['message'=>'Student ID not found.']);
+  //  echo 'Student ID not found.';
      }
   }
 catch (Exception $e) {
+  http_response_code(500);
+  echo json_encode(['message'=>'Server error.']);
     echo $e->getMessage();
   }
-}
+//}
 ?>
