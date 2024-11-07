@@ -1,6 +1,6 @@
 <?php
 session_start();
-require 'db.php';
+require '../db.php';
 
 if (isset($_POST['signin'])) {
     $username = $_POST['username'];
@@ -9,6 +9,7 @@ if (isset($_POST['signin'])) {
             FROM users U JOIN student S
             ON U.username=S.studentID
             WHERE username=?';
+    try {
     $stmt = $conn->prepare($sql);
     $stmt->bind_param('s', $username);
     $stmt->execute();
@@ -23,15 +24,28 @@ if (isset($_POST['signin'])) {
       //$_SESSION['studentID'] = $row['studentID'];
       //$_SESSION['firstName'] = $row['firstName'];
       //$_SESSION['lastName'] = $row['lastName'];
-      header('Location: index.php');
-      exit();
+      //header('Location: index.php');
+      //exit();
+      http_response_code(200);
+      echo 'Success';
     }
     else {
+      http_response_code(401);
       echo 'Password ไม่ถูกต้อง';
     }
 }
 else {
+    http_response_code(401);
     echo 'Username ไม่ถูกต้อง';
   }
 }
+catch (Exception) {
+    http_response_code(500);
+    echo 'Server error.';
+    }
+}
+    else {
+      http_response_code(401);
+      echo 'Unauthorized';
+    }
 ?>
